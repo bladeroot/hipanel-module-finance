@@ -176,6 +176,11 @@ abstract class AbstractCartPosition extends ActiveRecord implements CartPosition
         $this->_value = (float) $value;
     }
 
+    public function __serialize()
+    {
+        return $this->serialize();
+    }
+
     public function serialize()
     {
         return serialize($this->serializationMap());
@@ -213,6 +218,11 @@ abstract class AbstractCartPosition extends ActiveRecord implements CartPosition
                 $this->setAttributes($value, false);
             },
         ];
+    }
+
+    public function __unserialize(array $serialized): void
+    {
+        $this->unserialize($serialized);
     }
 
     public function unserialize($serialized)
