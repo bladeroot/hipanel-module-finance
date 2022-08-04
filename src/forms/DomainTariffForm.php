@@ -107,7 +107,7 @@ class DomainTariffForm extends AbstractTariffForm
         $result = [];
 
         foreach ($this->tariff->resources as $resource) {
-            if (strcmp($resource->object_id, $id) === 0 && $resource->isTypeCorrect()) {
+            if (strcmp($resource->object_id ?? '', $id) === 0 && $resource->isTypeCorrect()) {
                 $result[$resource->type] = $resource;
             }
         }
