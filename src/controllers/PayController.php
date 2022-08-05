@@ -151,6 +151,9 @@ class PayController extends \hiqdev\yii2\merchant\controllers\PayController
         }
 
         $transaction->complete();
+        if (empty($response['id'])) {
+            return $transaction;
+        }
         $transaction->addParameter('bill_id', $response['id']);
 
         $this->getMerchantModule()->saveTransaction($transaction);
