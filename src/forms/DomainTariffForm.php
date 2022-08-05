@@ -28,7 +28,7 @@ class DomainTariffForm extends AbstractTariffForm
     public function load($data, $formName = null)
     {
         $this->setAttributes($data[$this->formName()]);
-        $this->setResources($data[(new DomainResource())->formName()]);
+        $this->setResources($data[(new DomainResource())->formName()] ?? null);
 
         $this->initTariff();
 
@@ -80,7 +80,7 @@ class DomainTariffForm extends AbstractTariffForm
     public function setResources($resources)
     {
         $result = [];
-        foreach ($resources as $resource) {
+        foreach ($resources ?? [] as $resource) {
             if ($resource instanceof DomainResource) {
                 $result[] = $resource;
                 continue;
