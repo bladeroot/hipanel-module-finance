@@ -96,10 +96,11 @@ class VdsTariffForm extends AbstractTariffForm
 
     public function getParentOveruseResource($type_id)
     {
-        return reset(array_filter($this->parentTariff->resources, function ($resource) use ($type_id) {
+        $resources = array_filter($this->parentTariff->resources, function ($resource) use ($type_id) {
             /** @var ServerResource $resource */
-            return strcmp($resource->type_id, $type_id) === 0 && $resource->isTypeCorrect();
-        }));
+            return strcmp($resource->type_id ?? '', $type_id ?? '') === 0 && $resource->isTypeCorrect();
+        });
+        return reset($resources);
     }
 
     /**
@@ -109,7 +110,7 @@ class VdsTariffForm extends AbstractTariffForm
     {
         return reset(array_filter($this->parentTariff->resources, function ($resource) use ($object_id) {
             /** @var ServerResource $resource */
-            return strcmp($resource->object_id, $object_id) === 0 && $resource->isHardwareTypeCorrect();
+            return strcmp($resource->object_id ?? '', $object_id ?? '') === 0 && $resource->isHardwareTypeCorrect();
         }));
     }
 

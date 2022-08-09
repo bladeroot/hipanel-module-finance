@@ -20,7 +20,11 @@ use yii\helpers\Html;
  * @var IndexPage $page
  */
 [$zonePrices, $servicePrices] = $grouper->group();
-[$parentZonePrices, $parentServicePrices] = $parentPrices;
+if (count($parentPrices) === 2) {
+    [$parentZonePrices, $parentServicePrices] = $parentPrices;
+} else {
+    $parentZonePrices = $parentPrices;
+}
 ?>
 
 <?php if (!$model->your_tariff) : ?>
