@@ -9,6 +9,8 @@ use yii\web\View;
 
 /**
  * @var View $this
+ * @var RepresentationCollection $representationCollection
+ * @var IndexPageUiOptions $uiModel
  * @var array $states
  * @var PlanSearch $model
  * @var ActiveDataProvider $dataProvider
@@ -48,15 +50,7 @@ $this->params['breadcrumbs'][] = $this->title;
                 'boxed' => false,
                 'dataProvider' => $dataProvider,
                 'filterModel' => $model,
-                'columns' => [
-                    'checkbox',
-                    'actions',
-                    'name',
-                    'client',
-                    'type',
-                    'state',
-                    'custom_attributes',
-                ],
+                'columns' => $representationCollection->getByName($uiModel->representation)->getColumns(),
             ]) ?>
         <?php $page->endBulkForm() ?>
     <?php $page->endContent() ?>
