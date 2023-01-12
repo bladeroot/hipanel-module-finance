@@ -29,11 +29,11 @@ use hipanel\modules\finance\forms\BillImportForm;
 use hipanel\modules\finance\forms\CurrencyExchangeForm;
 use hipanel\modules\finance\helpers\ChargesGrouper;
 use hipanel\modules\finance\models\ExchangeRate;
+use hipanel\modules\finance\models\query\ChargeQuery;
 use hipanel\modules\finance\models\Resource;
 use hipanel\modules\finance\providers\BillTypesProvider;
-use hipanel\modules\finance\widgets\BillSummaryTable;
+use hipanel\modules\finance\widgets\FinanceSummaryTable;
 use hipanel\widgets\SynchronousCountEnabler;
-use hiqdev\hiart\ActiveQuery;
 use hiqdev\hiart\Collection;
 use Tuck\Sort\Sort;
 use Yii;
@@ -80,19 +80,22 @@ class BillController extends \hipanel\base\CrudController
             'index' => [
                 'class' => IndexAction::class,
                 'data' => function () {
-                    [$billTypes, $billGroupLabels] = $this->getTypesAndGroups();
+                    $billTypesList = $this->billTypesProvider->getTypes();
                     $rates = $this->getExchangeRates();
 
-                    return compact('billTypes', 'billGroupLabels', 'rates');
+                    return [
+                        'rates' => $rates,
+                        'billTypesList' => $billTypesList,
+                    ];
                 },
                 'responseVariants' => [
                     IndexAction::VARIANT_SUMMARY_RESPONSE => static function (VariantsAction $action): string {
                         $dataProvider = $action->parent->getDataProvider();
                         $defaultSummary = (new SynchronousCountEnabler($dataProvider, fn(GridView $grid): string => $grid->renderSummary()))();
 
-                        return $defaultSummary . BillSummaryTable::widget([
+                        return $defaultSummary . FinanceSummaryTable::widget([
                             'currencies' => $action->controller->getCurrencyTypes(),
-                            'allBills' => $dataProvider->query->andWhere(['groupby' => 'sum_by_currency'])->all(),
+                            'allModels' => $dataProvider->query->andWhere(['groupby' => 'sum_by_currency'])->all(),
                         ]);
                     },
                 ],
@@ -103,16 +106,15 @@ class BillController extends \hipanel\base\CrudController
                     /** @var \hipanel\actions\SearchAction $action */
                     $action = $event->sender;
                     $dataProvider = $action->getDataProvider();
-                    $dataProvider->query
-                        ->joinWith(['charges' => function (ActiveQuery $query) {
-                            $query->joinWith('commonObject');
-                            $query->joinWith('latestCommonObject');
-                        }])
-                        ->andWhere(['with_charges' => true]);
+                    $dataProvider->query->joinWith(['charges' => function (ChargeQuery $query) {
+                        $query->withCommonObject();
+                        $query->withLatestCommonObject();
+                    }])->andWhere(['with_charges' => true]);
                 },
                 'data' => function (Action $action, array $data) {
                     return array_merge($data, [
                         'grouper' => new ChargesGrouper($data['model']->charges),
+                        'currencies' => $action->controller->getCurrencyTypes(),
                     ]);
                 },
             ],
@@ -202,13 +204,11 @@ class BillController extends \hipanel\base\CrudController
 
             if ($models !== null) {
                 $models = BillForm::createMultipleFromBills($models, 'create');
-                [$billTypes, $billGroupLabels] = $this->getTypesAndGroups();
 
                 return $this->render('create', [
                     'models' => $models,
                     'model' => reset($models),
-                    'billTypes' => $billTypes,
-                    'billGroupLabels' => $billGroupLabels,
+                    'billTypesList' => $this->billTypesProvider->getTypesList(),
                 ]);
             }
         }

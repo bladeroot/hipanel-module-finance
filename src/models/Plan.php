@@ -88,6 +88,11 @@ class Plan extends Model
         self::TYPE_LOAD_BALANCER        => self::TYPE_LOAD_BALANCER,
     ];
 
+    public $deprecatedTariff = [
+        self::TYPE_PCDN                 => self::TYPE_PCDN,
+        self::TYPE_VCDN                 => self::TYPE_VCDN,
+    ];
+
     use ModelTrait;
 
     /**
@@ -107,7 +112,7 @@ class Plan extends Model
             [['id'], 'required', 'on' => ['update', 'delete', 'set-note']],
             [['id'], 'required', 'on' => ['delete', 'restore']],
             [['id', 'server_ids'], 'safe', 'on' => ['copy']],
-            [['your_tariff', 'is_saled'], 'boolean'],
+            [['your_tariff', 'is_sold'], 'boolean'],
             [['fee'], 'number'],
             [['custom_attributes', 'data'], 'safe', 'on' => ['create', 'update']],
         ]);
@@ -129,7 +134,7 @@ class Plan extends Model
             'monthly' => Yii::t('hipanel.finance.plan', 'Monthly'),
             'is_grouping' => Yii::t('hipanel.finance.plan', 'Grouping'),
             'currency' => Yii::t('hipanel:finance', 'Currency'),
-            'is_saled' => Yii::t('hipanel:finance', 'Is saled?'),
+            'is_sold' => Yii::t('hipanel:finance', 'Is sold?'),
             'fee' => Yii::t('hipanel:finance', 'Subscription fee'),
         ]);
     }
@@ -164,7 +169,14 @@ class Plan extends Model
 
     public function getTypeOptions()
     {
-        return Ref::getList('type,tariff');
+        $result = [];
+        $tariffs = Ref::getList('type,tariff');
+        foreach ($tariffs as $key => $type) {
+            if (!in_array($key, $this->deprecatedTariff)) {
+                $result[$key] = $type;
+            }
+        }
+        return $result;
     }
 
     public function getStateOptions()

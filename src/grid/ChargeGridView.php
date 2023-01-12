@@ -10,10 +10,9 @@
 
 namespace hipanel\modules\finance\grid;
 
+use hipanel\grid\BoxedGridView;
 use hipanel\grid\CurrencyColumn;
-use hipanel\grid\MainColumn;
 use hipanel\helpers\Url;
-use hipanel\modules\client\grid\ClientColumn;
 use hipanel\modules\finance\logic\bill\QuantityFormatterFactoryInterface;
 use hipanel\modules\finance\models\Charge;
 use hipanel\modules\finance\models\ChargeSearch;
@@ -31,7 +30,7 @@ use yii\helpers\Html;
  *
  * @author Dmytro Naumenko <d.naumenko.a@gmail.com>
  */
-class ChargeGridView extends \hipanel\grid\BoxedGridView
+class ChargeGridView extends BoxedGridView
 {
     /**
      * @var QuantityFormatterFactoryInterface
@@ -72,6 +71,7 @@ class ChargeGridView extends \hipanel\grid\BoxedGridView
             ],
             'type_label' => [
                 'label' => Yii::t('hipanel', 'Type'),
+                'headerOptions' => ['class' => 'text-right', 'style' => 'max-width: 25em'],
                 'format' => 'raw',
                 'value' => function (Charge $model) {
                     return BillType::widget([
@@ -83,11 +83,19 @@ class ChargeGridView extends \hipanel\grid\BoxedGridView
                 'filterAttribute' => 'type',
                 'filter' => function (DataColumn $column, ChargeSearch $filterModel): string {
                     return BillTypeFilter::widget([
-                        'options' => ['class' => 'form-control text-right', 'style' => 'max-width: 12em'],
-                        'attribute' => 'ftype',
+                        'attribute' => 'type_id',
                         'model' => $filterModel,
                     ]);
                 },
+                'exportedColumns' => ['export_type', 'export_top_type'],
+            ],
+            'export_type' => [
+                'label' => Yii::t('hipanel', 'Type'),
+                'value' => static fn(Charge $charge): string => $charge->ftype,
+            ],
+            'export_top_type' => [
+                'label' => Yii::t('hipanel', 'Payment Type'),
+                'value' => static fn(Charge $charge): string => Yii::t('hipanel.finance.billTypes', explode(',', $charge->ftype)[0]),
             ],
             'sum' => [
                 'class' => CurrencyColumn::class,

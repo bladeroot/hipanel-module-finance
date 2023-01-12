@@ -23,7 +23,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 <?php $page = IndexPage::begin(['model' => $model, 'dataProvider' => $dataProvider]) ?>
 
-    <?php $page->setSearchFormData([]) ?>
+    <?php $page->setSearchFormData(['uiModel' => $uiModel]) ?>
 
     <?php $page->beginContent('main-actions') ?>
         <?php if (Yii::$app->user->can('plan.create')) : ?>
@@ -33,6 +33,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php $page->beginContent('sorter-actions') ?>
         <?= $page->renderSorter(['attributes' => ['id']]) ?>
+    <?php $page->endContent() ?>
+    <?php $page->beginContent('representation-actions') ?>
+        <?= $page->renderRepresentations($representationCollection) ?>
     <?php $page->endContent() ?>
 
     <?php $page->beginContent('bulk-actions') ?>

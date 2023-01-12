@@ -25,10 +25,7 @@ use yii\base\Event;
  */
 class ChargeController extends CrudController
 {
-    /**
-     * @var BillTypesProvider
-     */
-    private $billTypesProvider;
+    private BillTypesProvider $billTypesProvider;
 
     public function __construct($id, $module, BillTypesProvider $billTypesProvider, $config = [])
     {
@@ -66,11 +63,9 @@ class ChargeController extends CrudController
                     $query->withCommonObject()->withLatestCommonObject();
                 },
                 'data' => function (RenderAction $action, array $data): array {
-                    [$billTypes, $billGroupLabels] = $this->getTypesAndGroups();
 
                     return [
-                        'billTypes' => $billTypes,
-                        'billGroupLabels' => $billGroupLabels,
+                        'billTypesList' => $this->billTypesProvider->getTypes(),
                         'clientTypes' => $this->getClientTypes(),
                         ];
                 },

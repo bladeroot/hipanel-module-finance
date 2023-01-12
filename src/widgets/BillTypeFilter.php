@@ -1,5 +1,4 @@
-<?php
-/**
+<?php /**
  * Finance module for HiPanel
  *
  * @link      https://github.com/hiqdev/hipanel-module-finance
@@ -21,7 +20,7 @@ class BillTypeFilter extends RefFilter
         /** @var BillTypesProvider $provider */
         $provider = Yii::createObject(BillTypesProvider::class);
 
-        return $this->prefixBillTypes($provider->getTypesList());
+        return $provider->getTypes();
     }
 
     /**
@@ -40,5 +39,14 @@ class BillTypeFilter extends RefFilter
         }
 
         return $types;
+    }
+
+    protected function renderInput(): string
+    {
+        return BillTypeVueTreeSelect::widget([
+            'attribute' => $this->attribute,
+            'model' => $this->model,
+            'billTypes' => $this->getRefs(),
+        ]);
     }
 }

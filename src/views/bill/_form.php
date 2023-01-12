@@ -2,9 +2,10 @@
 
 use hipanel\helpers\Url;
 use hipanel\modules\client\widgets\combo\ClientCombo;
+use hipanel\modules\finance\forms\BillForm;
 use hipanel\modules\finance\models\Bill;
+use hipanel\modules\finance\widgets\BillTypeVueTreeSelect;
 use hipanel\modules\finance\widgets\PricePerUnitWidget;
-use hipanel\modules\finance\widgets\combo\MultipleBillTypeCombo;
 use hipanel\modules\finance\widgets\combo\BillRequisitesCombo;
 use hipanel\modules\finance\widgets\SumSignToggleButton;
 use hipanel\widgets\AmountWithCurrency;
@@ -13,12 +14,14 @@ use hipanel\widgets\DynamicFormWidget;
 use hipanel\widgets\combo\ObjectCombo;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
+use yii\web\View;
 
-/** @var yii\web\View $this */
-/** @var hipanel\modules\finance\forms\BillForm[] $models */
-/** @var array $billTypes */
-/** @var array $billTypesList */
-/** @var array $billGroupLabels */
+/**
+ * @var View $this
+ * @var BillForm[] $models
+ * @var array $billTypesList
+ */
+
 
 $model = reset($models);
 $timeResolver = static function ($model): ?string {
@@ -50,7 +53,7 @@ $this->registerCss("
   margin-right: -10px;
   margin-left: -10px;
 }
-}
+
 ");
 
 $form = ActiveForm::begin([
@@ -129,8 +132,9 @@ $form = ActiveForm::begin([
                                 ]) ?>
                             </div>
                             <div class="col-md-3">
-                                <?= $form->field($model, "[$i]type")->widget(\hipanel\modules\finance\widgets\BillTypeTreeselect::class, [
+                                <?= $form->field($model, "[$i]type_id")->widget(BillTypeVueTreeSelect::class, [
                                     'billTypes' => $billTypesList,
+                                    'replaceAttribute' => 'type_id',
                                 ]) ?>
                             </div>
                             <div class="col-md-2 <?= AmountWithCurrency::$widgetClass ?>">
@@ -185,7 +189,7 @@ $form = ActiveForm::begin([
                                 'widgetBody' => '.bill-charges', // required: css class selector
                                 'widgetItem' => '.charge-item', // required: css class
                                 'limit' => 99, // the maximum times, an element can be cloned (default 999)
-                                'min' => 1,
+                                'min' => 0,
                                 'insertButton' => '.add-charge',
                                 'deleteButton' => '.remove-charge',
                                 'model' => $charge,
@@ -221,11 +225,9 @@ $form = ActiveForm::begin([
                                                     ]) ?>
                                                 </div>
                                                 <div class="col-md-3">
-                                                    <?= $form->field($charge, "[$i][$j]type")->widget(MultipleBillTypeCombo::class, [
-                                                        'billTypes' => $billTypes,
-                                                        'billGroupLabels' => $billGroupLabels,
-                                                        'multiple' => false,
-                                                        'useFullType' => true,
+                                                    <?= $form->field($charge, "[$i][$j]type_id")->widget(BillTypeVueTreeSelect::class, [
+                                                        'billTypes' => $billTypesList,
+                                                        'replaceAttribute' => 'type_id',
                                                     ]) ?>
                                                 </div>
                                                 <div class="col-md-5">
@@ -355,12 +357,6 @@ $form = ActiveForm::begin([
       $(el).find('.charges_dynamicform_wrapper').on('afterInsert', updateChargesTime).on('afterInsert', copyObject);
       updateChargesTime();
     });
-    $(".charges_dynamicform_wrapper").on("beforeDelete", function(e, item) {
-        if ($('.charge-item').length === 1  && !confirm("You want to delete the last charge item. Are you sure?")) {
-            return false;
-        }
-        return true;
-});
     // ---
   })();
 JS

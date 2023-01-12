@@ -3,9 +3,8 @@
 use hipanel\modules\client\widgets\combo\ClientCombo;
 use hipanel\modules\client\widgets\combo\SellerCombo;
 use hipanel\modules\finance\helpers\CurrencyFilter;
-use hipanel\modules\finance\widgets\BillIsPayedDropdown;
+use hipanel\modules\finance\widgets\BillTypeVueTreeSelect;
 use hipanel\modules\finance\widgets\combo\BillRequisitesCombo;
-use hipanel\modules\finance\widgets\combo\MultipleBillTypeCombo;
 use hipanel\modules\finance\widgets\combo\PlanCombo;
 use hipanel\widgets\AdvancedSearch;
 use hiqdev\combo\StaticCombo;
@@ -14,10 +13,9 @@ use yii\helpers\Html;
 use yii\web\View;
 
 /**
- * @var View
+ * @var $this View
  * @var AdvancedSearch $search
- * @var array $billTypes
- * @var array $billGroupLabels
+ * @var array $billTypesList
  */
 ?>
 
@@ -45,13 +43,13 @@ use yii\web\View;
 
 <div class="col-md-4 col-sm-6 col-xs-12">
     <div class="form-group">
-        <?= Html::label(Yii::t('hipanel', 'Date')) ?>
         <?= DateRangePicker::widget([
             'model' => $search->model,
             'attribute' => 'time_from',
             'attribute2' => 'time_till',
             'options' => [
                 'class' => 'form-control',
+                'placeholder' => Yii::t('hipanel', 'Date'),
             ],
             'dateFormat' => 'yyyy-MM-dd',
         ]) ?>
@@ -59,10 +57,9 @@ use yii\web\View;
 </div>
 
 <div class="col-md-4 col-sm-6 col-xs-12">
-    <?= $search->field('type_in')->widget(MultipleBillTypeCombo::class, [
-        'billTypes' => $billTypes,
-        'billGroupLabels' => $billGroupLabels,
-        'isFlatList' => true,
+    <?= $search->field('type_ids')->widget(BillTypeVueTreeSelect::class, [
+        'billTypes' => $billTypesList,
+        'multiple' => true
     ]) ?>
 </div>
 

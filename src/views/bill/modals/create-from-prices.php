@@ -3,17 +3,19 @@
 use hipanel\modules\finance\forms\BillFromPricesForm;
 use hipanel\modules\finance\grid\PriceGridView;
 use hipanel\modules\finance\models\Price;
-use hipanel\modules\finance\widgets\combo\MultipleBillTypeCombo;
+use hipanel\modules\finance\widgets\BillTypeVueTreeSelect;
 use hipanel\widgets\DateTimePicker;
 use yii\bootstrap\ActiveForm;
 use yii\data\ArrayDataProvider;
 use yii\helpers\Html;
 use yii\helpers\Url;
 
-/** @var BillFromPricesForm $model */
-/** @var Price[] $prices */
-/** @var array $billTypes */
-/** @var array $billGroupLabels */
+/**
+ * @var BillFromPricesForm $model
+ * @var Price[] $prices
+ * @var array $billTypes
+ */
+
 
 ?>
 
@@ -29,11 +31,8 @@ use yii\helpers\Url;
 
 <div class="row">
     <div class="col-md-6">
-        <?= $form->field($model, "type")->widget(MultipleBillTypeCombo::class, [
+        <?= $form->field($model, "type_id")->widget(BillTypeVueTreeSelect::class, [
             'billTypes' => $billTypes,
-            'billGroupLabels' => $billGroupLabels,
-            'multiple' => false,
-            'useFullType' => true,
         ]) ?>
     </div>
     <div class="col-md-6">

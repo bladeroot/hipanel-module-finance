@@ -3,21 +3,19 @@
 use hipanel\modules\client\widgets\combo\ClientCombo;
 use hipanel\modules\client\widgets\combo\SellerCombo;
 use hipanel\modules\finance\helpers\CurrencyFilter;
-use hipanel\modules\finance\widgets\combo\MultipleBillTypeCombo;
+use hipanel\modules\finance\widgets\BillTypeVueTreeSelect;
 use hipanel\modules\finance\widgets\combo\PlanCombo;
 use hipanel\modules\stock\widgets\combo\OrderCombo;
 use hipanel\widgets\AdvancedSearch;
 use hiqdev\combo\StaticCombo;
 use hiqdev\yii2\daterangepicker\DateRangePicker;
 use yii\base\View;
-use yii\bootstrap\Html;
 
 /**
  * @var View $this
  * @var AdvancedSearch $search
- * @var array $billTypes
- * @var array $billGroupLabels
  * @var array $clientTypes
+ * @var array $billTypesList
  */
 
 $currencies = $this->context->getCurrencyTypes();
@@ -26,8 +24,10 @@ $currencies = CurrencyFilter::addSymbolAndFilter($currencies);
 ?>
 
 <div class="col-md-4 col-sm-6 col-xs-12">
-    <?= Html::tag('label', Yii::t('hipanel', 'Type'), ['class' => 'control-label']); ?>
-    <?= $search->field('type_in')->widget(MultipleBillTypeCombo::class, compact('billTypes', 'billGroupLabels')) ?>
+    <?= $search->field( "type_ids")->widget(BillTypeVueTreeSelect::class, [
+        'billTypes' => $billTypesList,
+        'multiple' => true
+    ]) ?>
 </div>
 
 <div class="col-md-4 col-sm-6 col-xs-12">
@@ -76,15 +76,19 @@ $currencies = CurrencyFilter::addSymbolAndFilter($currencies);
 
 <div class="col-md-4 col-sm-6 col-xs-12">
     <div class="form-group">
-        <?= Html::tag('label', Yii::t('hipanel', 'Time'), ['class' => 'control-label']); ?>
         <?= DateRangePicker::widget([
             'model' => $search->model,
             'attribute' => 'time_from',
             'attribute2' => 'time_till',
             'options' => [
                 'class' => 'form-control',
+                'placeholder' => Yii::t('hipanel', 'Time'),
             ],
             'dateFormat' => 'yyyy-MM-dd',
         ]) ?>
     </div>
+</div>
+
+<div class="col-md-4 col-sm-6 col-xs-12">
+    <?= $search->field('sum_not_zero', ['options' => ['class' => 'form-group checkbox']])->checkbox(['class' => 'option-input']) ?>
 </div>

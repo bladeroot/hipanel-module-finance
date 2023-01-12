@@ -25,7 +25,7 @@ use yii\helpers\StringHelper;
  * @property string $quantity
  * @property Charge[] charges
  */
-class Bill extends \hipanel\base\Model
+class Bill extends \hipanel\base\Model implements HasSumAndCurrencyAttributesInterface
 {
     use \hipanel\base\ModelTrait;
 
@@ -55,8 +55,8 @@ class Bill extends \hipanel\base\Model
     public function rules()
     {
         return [
-            [['client_id', 'seller_id', 'id', 'requisite_id'], 'integer'],
-            [['object_id', 'tariff_id'], 'integer'],
+            [['client_id', 'seller_id', 'id', 'requisite_id', 'purse_id'], 'integer'],
+            [['object_id', 'tariff_id', 'type_id'], 'integer'],
             [['client', 'seller', 'bill', 'unit', 'requisite'], 'safe'],
             [['domain', 'server'], 'safe'],
             [['sum', 'balance', 'quantity', 'positive', 'negative', 'opening_balance', 'closing_balance'], 'number'],

@@ -33,7 +33,7 @@ use Yii;
  * @property TargetObject $latestCommonObject
  * @property Bill $bill
  */
-class Charge extends Resource
+class Charge extends Resource implements HasSumAndCurrencyAttributesInterface
 {
     use \hipanel\base\ModelTrait;
 
@@ -57,9 +57,9 @@ class Charge extends Resource
             [['class', 'name', 'unit', 'tariff', 'order_name', 'client', 'seller', 'client_type'], 'string'],
             [['type', 'label', 'ftype', 'time', 'type_label', 'currency'], 'safe'],
             [['is_payed'], 'boolean'],
-            [['sum', 'quantity'], 'number'],
+            [['sum', 'quantity', 'bill_quantity'], 'number'],
             [['unit'], 'default', 'value' => 'items', 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]],
-            [['object_id', 'sum', 'type', 'quantity', 'unit'], 'required', 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]],
+            [['object_id', 'sum', 'type_id', 'quantity', 'unit'], 'required', 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]],
             [['id'], 'safe', 'on' => [self::SCENARIO_CREATE, self::SCENARIO_UPDATE]],
         ];
     }
@@ -75,6 +75,7 @@ class Charge extends Resource
             'object_id' => Yii::t('hipanel', 'Object Id'),
             'order_id' => Yii::t('hipanel', 'Order'),
             'is_payed' => Yii::t('hipanel:finance', 'Is paid?'),
+            'type_id' => Yii::t('hipanel:finance', 'Type'),
         ]);
     }
 

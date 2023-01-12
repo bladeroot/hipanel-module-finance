@@ -12,6 +12,7 @@ namespace hipanel\modules\finance\grid;
 
 use hipanel\grid\CurrencyColumn;
 use hipanel\grid\MainColumn;
+use hipanel\grid\RefColumn;
 use hipanel\helpers\Url;
 use hipanel\modules\client\grid\ClientColumn;
 use hipanel\modules\finance\helpers\CurrencyFilter;
@@ -257,24 +258,24 @@ class BillGridView extends \hipanel\grid\BoxedGridView
                 'attribute' => 'gtype',
             ],
             'type_label' => [
+                'label' => Yii::t('hipanel:finance', 'Type'),
                 'filterOptions' => ['class' => 'text-right'],
                 'filter' => function ($column, $filterModel) {
                     return BillTypeFilter::widget([
-                        'options' => ['class' => 'form-control text-right', 'style' => 'max-width: 12em'],
-                        'attribute' => 'ftype',
+                        'attribute' => 'type_id',
                         'model' => $filterModel,
                     ]);
                 },
-                'sortAttribute' => 'type',
+                'sortAttribute' => 'type_id',
                 'format' => 'raw',
-                'headerOptions' => ['class' => 'text-right'],
-                'contentOptions' => function (Bill $model) {
+                'headerOptions' => ['class' => 'text-right', 'style' => 'max-width: 25em'],
+                'contentOptions' => function () {
                     return ['class' => 'text-right'];
                 },
                 'value' => function (Bill $model) {
                     return BillType::widget([
                         'model' => $model,
-                        'field' => 'ftype',
+                        'field' => 'type',
                         'labelField' => 'type_label',
                     ]);
                 },
@@ -293,7 +294,7 @@ class BillGridView extends \hipanel\grid\BoxedGridView
                 'format' => 'raw',
                 'value' => function (Bill $model) {
                     $requisite = $model->requisite ? Html::tag('small', Html::encode($model->requisite), ['class' => 'label bg-purple']) : null;
-                    $descr = Html::encode($model->descr ?? $model->label ?? '');
+                    $descr = Html::encode(Yii::t('hipanel',$model->descr ?? $model->label ?? ''));
                     $text = mb_strlen($descr) > 70 ? ArraySpoiler::widget(['data' => $descr]) : $descr;
                     $tariff = $model->tariff ? Html::tag('span',
                         Yii::t('hipanel', 'Tariff') . ': ' . $this->tariffLink($model), ['class' => 'pull-right']) : '';
